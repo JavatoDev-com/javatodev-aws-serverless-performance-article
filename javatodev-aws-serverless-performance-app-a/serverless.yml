@@ -1,10 +1,36 @@
 service: javatodev-aws-app-a
-frameworkVersion: '3'
+frameworkVersion: "3"
 
 provider:
   name: aws
   runtime: nodejs18.x
   region: us-west-2
+
+  environment:
+    JAVATODEV_USER_TABLE: javatodev_users-${sls:stage, aws:region}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - !GetAtt JavatodevUsersDynamoDBTable.Arn
+        
+resources:
+  Resources:
+    JavatodevUsersDynamoDBTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: "id"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "id"
+            KeyType: "HASH"
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        TableName: ${self:provider.environment.JAVATODEV_USER_TABLE}
 
 functions:
   api:
