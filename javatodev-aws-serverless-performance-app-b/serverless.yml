@@ -1,4 +1,4 @@
-service: javatodev-aws-serverless-performance-app-b
+service: javatodev-aws-app-b
 frameworkVersion: '3'
 
 provider:
